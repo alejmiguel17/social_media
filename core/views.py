@@ -18,7 +18,7 @@ def signup_view(request):
         return redirect('index')
     return render(request, 'signup.html')
 
-def signin_view(request):
+def login_view(request):
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
@@ -26,7 +26,7 @@ def signin_view(request):
         if user:
             login(request, user)
             return redirect('index')
-    return render(request, 'signin.html')
+    return render(request, 'login.html')
 
 def logout_view(request):
     logout(request)
