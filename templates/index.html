@@ -1,17 +1,50 @@
 {% extends '_base.html' %}
 
 {% block content %}
-    <h1>Bienvenido</h1>
+<style>
+    h1 {
+        color: red;
+        text-align: center;
+    }
 
+    .welcome-message {
+        font-size: 18px;
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .auth-links {
+        text-align: center;
+        margin-top: 30px;
+    }
+
+    .auth-links a {
+        color: #333;
+        background-color: #e0e0e0;
+        padding: 8px 16px;
+        text-decoration: none;
+        border-radius: 4px;
+        margin: 0 10px;
+    }
+
+    .auth-links a:hover {
+        background-color: #d5d5d5;
+    }
+</style>
+
+<h1>Bienvenido</h1>
+
+<div class="welcome-message">
     {% if user.is_authenticated %}
         <p>Hola, {{ user.username }} 👋</p>
-        <p>
-        <a href="{% url 'logout' %}">Cerrar sesión</a>
-        </p>
+        <div class="auth-links">
+            <a href="{% url 'logout' %}">Cerrar sesión</a>
+        </div>
     {% else %}
-        <p>
-        <a href="{% url 'login' %}">Iniciar sesión</a> o 
-        <a href="{% url 'signup' %}">Registrarse</a>
-        </p>
+        <div class="auth-links">
+            <a href="{% url 'login' %}">Iniciar sesión</a> o 
+            <a href="{% url 'signup' %}">Registrarse</a>
+        </div>
     {% endif %}
+</div>
 {% endblock %}
