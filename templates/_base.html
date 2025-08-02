@@ -54,10 +54,22 @@
             <a href="{% url 'login' %}">Iniciar sesión</a>
             <a href="{% url 'signup' %}">Registrarse</a>
         {% endif %}
+
     </nav>
 
     <main>
         {% block content %}
+            <h2>Publicaciones</h2>
+            {% for post in posts %}
+                <div class="post">
+                    <p>{{ post.caption }}</p>
+                    {% if post.image %}
+                        <img src="{{ post.image.url }}" alt="Imagen del post" style="max-width:100%;">
+                    {% endif %}
+                </div>
+            {% empty %}
+                <p>No hay publicaciones todavía.</p>
+            {% endfor %}
         {% endblock content %}
     </main>
 

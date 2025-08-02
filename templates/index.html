@@ -47,4 +47,18 @@
         </div>
     {% endif %}
 </div>
+
+{% if user.is_authenticated %}
+    <div class="upload-form">
+        <h2>Crear una publicación</h2>
+        <form method="POST" enctype="multipart/form-data" action="{% url 'upload_post' %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Publicar</button>
+        </form>
+    </div>
+{% endif %}
+
+
+
 {% endblock %}

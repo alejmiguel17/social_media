@@ -1,10 +1,14 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-from .models import Profile
+from .models import Profile, Post
+from django.contrib.auth.decorators import login_required
+from .forms import PostForm
 
 def index(request):
-    return render(request, 'index.html')    
+    form = PostForm()
+    return render(request, 'index.html', {'form': form})
+
 
 def signup_view(request):
     if request.method == 'POST':
@@ -31,3 +35,29 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect('index')
+
+@login_required
+def upload_post(request):
+    if request.method == 'POST':
+        caption = request.POST.get('caption')
+        image = request.FILES.get('image')
+
+        if image:
+            Post.objects.create(
+                user=request.user,
+                caption=caption,
+                image=image
+            )
+            return redirect('index')
+        else:
+            return render(request, 'upload_post.html', {
+                'error': 'Debes subir una imagen.'
+            })
+
+    return render(request, 'upload_post.html')
+
+from .models import Post
+
+def home(request):
+    posts = Post.objects.all().order_by('-created_at')  # O cualquier orden que uses
+    return render(request, 'home.html', {'posts': posts})
