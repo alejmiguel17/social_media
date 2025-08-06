@@ -37,6 +37,21 @@
 <div class="welcome-message">
     {% if user.is_authenticated %}
         <p>Hola, {{ user.username }} 👋</p>
+
+<!------------------------------------------------>
+<!-- sistema de publicaciones (post)  #JD 05 08 -->
+        <div class="upload-section">
+            <h3>Crear una nueva publicación</h3>
+            <form action="{% url 'upload-post' %}" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <p><input type="file" name="image_upload" required></p>
+                <p><textarea name="caption" placeholder="Escribe una descripción..." rows="4" cols="50" required></textarea></p>
+                <button type="submit">Publicar</button>
+            </form>
+        </div>
+<!------------------------------------------------>
+
+
         <div class="auth-links">
             <a href="{% url 'logout' %}">Cerrar sesión</a>
         </div>

@@ -2,6 +2,9 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from .models import Profile
+from .models import Post #JD 05 08
+from django.shortcuts import redirect #JD 05 08
+from django.contrib.auth.decorators import login_required #JD 05 08
 
 def index(request):
     return render(request, 'index.html')    
@@ -31,3 +34,20 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect('index')
+
+#--------------------------------------------
+# sistema de publicaciones (post)  #JD 05 08
+@login_required(login_url='login') 
+def upload_post(request):
+    if request.method == 'POST':
+        user = request.user.username
+        image = request.FILES.get('image_upload')
+        caption = request.POST.get('caption')
+
+        new_post = Post.objects.create(user=user, image=image, caption=caption)
+        new_post.save()
+
+        return redirect('index')
+    else:
+        return redirect('index')
+#--------------------------------------------
