@@ -1,0 +1,16 @@
+{% extends '_base.html' %}
+
+{% block content %}
+<h2>Publicaciones</h2>
+{% for post in posts %}
+    <div class="post">
+        <p><strong>{{ post.user }}</strong></p>
+        <img src="{{ post.image.url }}" alt="Imagen del post" style="max-width:300px;">
+        <p>{{ post.caption }}</p>
+        <p><small>{{ post.created_at }}</small></p>
+        <hr>
+    </div>
+{% empty %}
+    <p>No hay publicaciones aún.</p>
+{% endfor %}
+{% endblock %}
