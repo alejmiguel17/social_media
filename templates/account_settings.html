@@ -1,0 +1,12 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% block content %}
+<h2>Configuración de Cuenta</h2>
+
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Guardar cambios</button>
+</form>
+{% endblock %}

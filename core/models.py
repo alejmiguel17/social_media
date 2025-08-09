@@ -3,13 +3,14 @@ from django.contrib.auth.models import User
 import uuid #JD 05 08
 from datetime import datetime #JD 05 08
 
-# profile.
+# Perfil del usuario
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    bio = models.TextField(blank=True, null=True)
-    location = models.CharField(max_length=100, blank=True)
+    bio = models.TextField(blank=True, null=True) #JD 05 08
+    # location del usuario
+    location = models.CharField(max_length=100, blank=True, null=True)
+    profile_picture = models.ImageField(upload_to='profile_pics', blank=True, null=True)
     
-
     def __str__(self):
         return self.user.username
 
