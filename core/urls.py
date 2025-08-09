@@ -20,8 +20,9 @@ from . import views
 urlpatterns = [
     path('', views.index, name='index'),
     path('signup', views.signup_view, name='signup'),
-    path('login', views.login_view, name='login'),
     path('logout', views.logout_view, name='logout'),
     path('upload-post', views.upload_post, name='upload-post'),
+    path('posts', views.posts_view, name='posts'),  # JD 05 08
+    path('account/settings/', views.account_settings, name='account_settings')
 ]
 #--------------------------------------------
