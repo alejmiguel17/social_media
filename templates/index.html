@@ -1,66 +1,23 @@
 {% extends '_base.html' %}
 
 {% block content %}
-<style>
-    h1 {
-        color: red;
-        text-align: center;
-    }
+<h2>Iniciar sesión</h2>
+<form method="post">
+    {% csrf_token %}
+    <label for="username">Usuario:</label>
+    <input type="text" name="username" id="username" required>
 
-    .welcome-message {
-        font-size: 18px;
-        text-align: center;
-        margin-top: 20px;
-    }
+    <label for="password">Contraseña:</label>
+    <input type="password" name="password" id="password" required>
 
-    .auth-links {
-        text-align: center;
-        margin-top: 30px;
-    }
+    <button type="submit">Entrar</button>
 
-    .auth-links a {
-        color: #333;
-        background-color: #e0e0e0;
-        padding: 8px 16px;
-        text-decoration: none;
-        border-radius: 4px;
-        margin: 0 10px;
-    }
-
-    .auth-links a:hover {
-        background-color: #d5d5d5;
-    }
-</style>
-
-<h1>Bienvenido</h1>
-
-<div class="welcome-message">
-    {% if user.is_authenticated %}
-        <p>Hola, {{ user.username }} 👋</p>
-
-<!------------------------------------------------>
-<!-- sistema de publicaciones (post)  #JD 05 08 -->
-        <div class="upload-section">
-            <h3>Crear una nueva publicación</h3>
-            <form action="{% url 'upload-post' %}" method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-                <p><input type="file" name="image_upload" required></p>
-                <p><textarea name="caption" placeholder="Escribe una descripción..." rows="4" cols="50" required></textarea></p>
-                <button type="submit">Publicar</button>
-            </form>
-        </div>
-<!------------------------------------------------>
-
-
-        <div class="auth-links">
-            <a href="{% url 'account_settings' %}">Configuración de cuenta</a>
-            <a href="{% url 'logout' %}">Cerrar sesión</a>
-        </div>
-    {% else %}
-        <div class="auth-links">
-            <a href="{% url 'login' %}">Iniciar sesión</a> o 
-            <a href="{% url 'signup' %}">Registrarse</a>
-        </div>
+    {% if error %}
+        <p class="error-message">{{ error }}</p>
     {% endif %}
+</form>
+
+<div class="extra-links">
+    <p>¿No tienes cuenta? <a href="{% url 'signup' %}">Regístrate aquí</a></p>
 </div>
 {% endblock %}
