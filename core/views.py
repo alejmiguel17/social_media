@@ -37,7 +37,9 @@ def signup_view(request):
         Profile.objects.create(user=user, bio=bio, location=location)
         login(request, user)
         return redirect('index')
-    return render(request, 'signup.html')
+    login(request, user)
+    return redirect('posts')
+    # return render(request, 'signup.html')
 
 # def login_view(request):
 #     if request.method == 'POST':
@@ -65,9 +67,9 @@ def upload_post(request):
         new_post = Post.objects.create(user=user, image=image, caption=caption)
         new_post.save()
 
-        return redirect('index')
-    else:
-        return redirect('index')
+        return redirect('posts')
+    # else:
+    #     return redirect('index')
 #--------------------------------------------
 # Perfil de usuario y configuración de cuenta
 @login_required

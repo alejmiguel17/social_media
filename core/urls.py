@@ -25,4 +25,7 @@ urlpatterns = [
     path('posts', views.posts_view, name='posts'),  # JD 05 08
     path('account/settings/', views.account_settings, name='account_settings')
 ]
-#--------------------------------------------
+
+
+
+
