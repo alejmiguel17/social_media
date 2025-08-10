@@ -5,6 +5,8 @@ from .models import Profile
 from .models import Post #JD 05 08
 from django.shortcuts import redirect #JD 05 08
 from django.contrib.auth.decorators import login_required #JD 05 08
+from .forms import ProfileUpdateForm
+
 
 def index(request):
     if request.user.is_authenticated:
@@ -27,6 +29,10 @@ def signup_view(request):
         password = request.POST['password']
         bio = request.POST.get('bio', '')
         location = request.POST.get('location', '')
+        
+        if User.objects.filter(username=username).exists():
+            return render(request, 'signup.html', {'error': 'El nombre de usuario ya existe.'})
+        
         user = User.objects.create_user(username=username, password=password)
         Profile.objects.create(user=user, bio=bio, location=location)
         login(request, user)
@@ -63,6 +69,21 @@ def upload_post(request):
     else:
         return redirect('index')
 #--------------------------------------------
+# Perfil de usuario y configuración de cuenta
+@login_required
+def account_settings(request):
+    profile, created = Profile.objects.get_or_create(user=request.user)
+
+    if request.method == 'POST':
+        form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('account_settings')
+    else:
+        form = ProfileUpdateForm(instance=profile)
+
+    return render(request, 'account_settings.html', {'form': form})
+
 # vista de publicaciones en una plantilla posts
 @login_required(login_url='login')
 def posts_view(request):
