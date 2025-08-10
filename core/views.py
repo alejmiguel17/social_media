@@ -29,27 +29,17 @@ def signup_view(request):
         password = request.POST['password']
         bio = request.POST.get('bio', '')
         location = request.POST.get('location', '')
-        
+
         if User.objects.filter(username=username).exists():
             return render(request, 'signup.html', {'error': 'El nombre de usuario ya existe.'})
-        
+
         user = User.objects.create_user(username=username, password=password)
         Profile.objects.create(user=user, bio=bio, location=location)
         login(request, user)
-        return redirect('index')
-    login(request, user)
-    return redirect('posts')
-    # return render(request, 'signup.html')
+        return redirect('index')  
 
-# def login_view(request):
-#     if request.method == 'POST':
-#         username = request.POST['username']
-#         password = request.POST['password']
-#         user = authenticate(request, username=username, password=password)
-#         if user:
-#             login(request, user)
-#             return redirect('posts')  # Redirige a publicaciones
-#     return render(request, 'login.html')
+    return render(request, 'signup.html')  
+
 
 def logout_view(request):
     logout(request)
@@ -93,3 +83,8 @@ def posts_view(request):
     return render(request, 'posts.html', {'posts': posts})  
 
 #--------------------------------------------
+def twita_icon(request):
+    if request.user.is_authenticated:
+        return redirect('posts')
+    else:
+        return redirect('index')

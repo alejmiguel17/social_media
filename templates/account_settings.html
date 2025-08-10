@@ -1,12 +1,21 @@
 {% extends '_base.html' %}
 {% load static %}
 
-{% block content %}
-<h2>Configuración de Cuenta</h2>
 
-<form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Guardar cambios</button>
-</form>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/account.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="account-settings-container">
+    <h2>Configuración de la cuenta</h2>
+    {% if user.profile.profile_picture %}
+        <img src="{{ user.profile.profile_picture.url }}" alt="Foto de perfil">
+    {% endif %}
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Guardar cambios</button>
+    </form>
+</div>
 {% endblock %}

@@ -1,4 +1,10 @@
 {% extends '_base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/posts.css' %}">
+{% endblock %}
+
 
 {% block content %}
 <h2>Publicaciones</h2>
