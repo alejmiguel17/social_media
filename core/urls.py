@@ -23,8 +23,11 @@ urlpatterns = [
     path('logout', views.logout_view, name='logout'),
     path('upload-post', views.upload_post, name='upload-post'),
     path('posts', views.posts_view, name='posts'),  
+    path('profile/<str:username>/', views.profile_view, name='profile'),
+    path('follow/', views.follow, name='follow'),
     path('account/settings/', views.account_settings, name='account_settings'),
     path('twita_icon/', views.twita_icon, name='twita_icon'),  
+
 ]
 
 

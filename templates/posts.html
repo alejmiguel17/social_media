@@ -30,6 +30,18 @@
         <hr>
     </div>
 {% empty %}
-    <p>No hay publicaciones aún.</p>
+    <p>Tu feed está vacío. ¡Empieza a seguir a otros usuarios para ver sus publicaciones!</p>
 {% endfor %}
+
+<!-- Sugerencias de usuarios -->
+{% if suggestions %}
+    <h3>Sugerencias para seguir:</h3>
+    <ul>
+        {% for user in suggestions %}
+            <li>
+                <a href="{% url 'profile' user.username %}">{{ user.username }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
 {% endblock %}

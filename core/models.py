@@ -27,3 +27,11 @@ class Post(models.Model):
     def __str__(self):
         return self.user
 #--------------------------------------------
+# sistema de seguimiento
+class FollowersCount(models.Model):
+    follower = models.CharField(max_length=100)
+    following = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f"{self.follower} sigue a {self.following}"
+
