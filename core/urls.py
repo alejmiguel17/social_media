@@ -26,7 +26,8 @@ urlpatterns = [
     path('profile/<str:username>/', views.profile_view, name='profile'),
     path('follow/', views.follow, name='follow'),
     path('account/settings/', views.account_settings, name='account_settings'),
-    path('twita_icon/', views.twita_icon, name='twita_icon'),  
+    path('twita_icon/', views.twita_icon, name='twita_icon'),
+    path('like-post', views.like_post, name='like-post'),  # JD 14 08  
 
 ]
 

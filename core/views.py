@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-from .models import Profile, Post, FollowersCount
+from .models import Profile, Post, FollowersCount, LikePost #JD 14 08
 from django.contrib.auth.decorators import login_required #JD 05 08
 from .forms import ProfileUpdateForm
 
@@ -146,3 +146,30 @@ def follow(request):
 
         return redirect('profile', username=following_username)
 
+#--------------------------------------------
+# sistema de likes  #JD 14 08
+@login_required(login_url='signin')
+def like_post(request):
+    # datos del usuario y post
+    username = request.user.username
+    post_id = request.GET.get('post_id')
+
+    # Busqueda de post en base de datos
+    post = Post.objects.get(id=post_id)
+
+    # Existe me gusta?
+    like_filter = LikePost.objects.filter(post_id=post_id, username=username).first()
+
+    if like_filter is None:
+        # No, se crea un nuevo Me Gusta
+        new_like = LikePost.objects.create(post_id=post_id, username=username)
+        new_like.save()
+        post.no_of_likes = post.no_of_likes + 1
+        post.save()
+    else:
+        # Si, se elimina el Me Gusta
+        like_filter.delete()
+        post.no_of_likes = post.no_of_likes - 1
+        post.save()
+
+    return redirect('/')

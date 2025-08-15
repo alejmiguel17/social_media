@@ -27,6 +27,17 @@
         <img src="{{ post.image.url }}" alt="Imagen del post" style="max-width:300px;">
         <p>{{ post.caption }}</p>
         <p><small>{{ post.created_at }}</small></p>
+
+<!-- ---------------------------------------------- -->
+<!-- Sistema de likes #JD 14 08                    -->
+        <div>
+            <a href="{% url 'like-post' %}?post_id={{ post.id }}">
+                <button>Me Gusta</button>
+            </a>
+            <p>{{ post.no_of_likes }} Me Gusta</p>
+        </div>
+<!-- ---------------------------------------------- -->
+
         <hr>
     </div>
 {% empty %}
