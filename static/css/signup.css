@@ -1,0 +1,79 @@
+/* Título principal */
+h2 {
+    font-size: 1.8em;
+    margin-bottom: 25px;
+    color: #1877f2;
+    text-align: center;
+}
+
+/* Mensaje de error */
+p[style*="color:red"] {
+    font-weight: 500;
+    margin-bottom: 20px;
+}
+
+/* Formulario de registro */
+form {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    max-width: 500px;
+    margin: 0 auto 30px auto;
+}
+
+form label {
+    display: block;
+    margin-top: 15px;
+    font-weight: 600;
+    color: #333;
+}
+
+form input[type="text"],
+form input[type="password"],
+form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+    margin-bottom: 15px;
+    font-size: 1em;
+}
+
+/* Botón de registro */
+form button {
+    background-color: #00b2ff;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 6px;
+    font-size: 1em;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s ease;
+    display: block;
+    margin: 20px auto 0 auto;
+}
+
+form button:hover {
+    background-color: #007acc;
+}
+
+/* Enlace a login */
+.extra-links {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.95em;
+}
+
+.extra-links a {
+    color: #1877f2;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.extra-links a:hover {
+    text-decoration: underline;
+}

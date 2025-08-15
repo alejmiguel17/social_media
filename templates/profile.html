@@ -1,0 +1,48 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+{% endblock %}
+
+{% block content %}
+<h2>Perfil de {{ profile_user.username }}</h2>
+
+<div class="profile-info">
+    {% if profile.profile_picture %}
+        <img src="{{ profile.profile_picture.url }}" alt="Foto de perfil" style="max-width:150px;">
+    {% else %}
+        <img src="{% static 'img/default_profile.png' %}" alt="Foto por defecto" style="max-width:150px;">
+    {% endif %}
+    <p><strong>Bio:</strong> {{ profile.bio|default:"Sin biografía" }}</p>
+    <p><strong>Ubicación:</strong> {{ profile.location|default:"No especificada" }}</p>
+    <p><strong>Seguidores:</strong> {{ followers }}</p>
+    <p><strong>Seguidos:</strong> {{ following }}</p>
+
+    {% if request.user.username != profile_user.username %}
+        <form method="POST" action="{% url 'follow' %}">
+            {% csrf_token %}
+            <input type="hidden" name="following" value="{{ profile_user.username }}">
+            {% if is_following %}
+                <button type="submit">Dejar de seguir</button>
+            {% else %}
+                <button type="submit">Seguir</button>
+            {% endif %}
+        </form>
+    {% endif %}
+</div>
+
+<hr>
+
+<h3>Publicaciones de {{ profile_user.username }}</h3>
+{% for post in user_posts %}
+    <div class="post">
+        <img src="{{ post.image.url }}" alt="Imagen del post" style="max-width:300px;">
+        <p>{{ post.caption }}</p>
+        <p><small>{{ post.created_at }}</small></p>
+        <hr>
+    </div>
+{% empty %}
+    <p>Este usuario no ha publicado nada aún.</p>
+{% endfor %}
+{% endblock %}

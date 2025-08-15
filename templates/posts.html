@@ -1,16 +1,58 @@
 {% extends '_base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/posts.css' %}">
+{% endblock %}
+
 
 {% block content %}
 <h2>Publicaciones</h2>
+
+<form method="post" enctype="multipart/form-data" action="{% url 'upload-post' %}">
+    {% csrf_token %}
+    <label for="image_upload">Imagen:</label>
+    <input type="file" name="image_upload" id="image_upload" required>
+    <br>
+    <label for="caption">Descripción:</label>
+    <textarea name="caption" id="caption" required></textarea>
+    <br>
+    <button type="submit">Publicar</button>
+</form>
+<hr>
+
 {% for post in posts %}
     <div class="post">
         <p><strong>{{ post.user }}</strong></p>
         <img src="{{ post.image.url }}" alt="Imagen del post" style="max-width:300px;">
         <p>{{ post.caption }}</p>
         <p><small>{{ post.created_at }}</small></p>
+
+<!-- ---------------------------------------------- -->
+ <!-- Sistema de likes #JD 14 08                    -->
+        <div>
+            <a href="{% url 'like-post' %}?post_id={{ post.id }}">
+                <button>Me Gusta</button>
+            </a>
+            <p>{{ post.no_of_likes }} Me Gusta</p>
+        </div>
+<!-- ---------------------------------------------- -->
+
         <hr>
     </div>
 {% empty %}
-    <p>No hay publicaciones aún.</p>
+    <p>Tu feed está vacío. ¡Empieza a seguir a otros usuarios para ver sus publicaciones!</p>
 {% endfor %}
+
+<!-- Sugerencias de usuarios -->
+{% if suggestions %}
+    <h3>Sugerencias para seguir:</h3>
+    <ul>
+        {% for user in suggestions %}
+            <li>
+                <a href="{% url 'profile' user.username %}">{{ user.username }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
 {% endblock %}

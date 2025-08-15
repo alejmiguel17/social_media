@@ -1,0 +1,58 @@
+.account-settings-container {
+    background: #fff;
+    max-width: 500px;
+    margin: 40px auto;
+    padding: 30px 40px;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+.account-settings-container h2 {
+    text-align: center;
+    color: #1877f2;
+    margin-bottom: 25px;
+}
+
+.account-settings-container img {
+    display: block;
+    margin: 0 auto 20px auto;
+    border-radius: 50%;
+    max-width: 120px;
+    max-height: 120px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+
+.account-settings-container label {
+    font-weight: 500;
+    margin-top: 15px;
+}
+
+.account-settings-container input[type="text"],
+.account-settings-container textarea,
+.account-settings-container input[type="file"] {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+    margin-bottom: 15px;
+}
+
+.account-settings-container button {
+    background-color: #1877f2;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 1em;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s;
+    display: block;
+    margin: 0 auto;
+}
+
+.account-settings-container button:hover {
+    background-color: #0056b3;
+}
