@@ -1,4 +1,5 @@
-from django.shortcuts import render, redirect
+
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from .models import Profile
@@ -6,6 +7,8 @@ from .models import Post #JD 05 08
 from django.shortcuts import redirect #JD 05 08
 from django.contrib.auth.decorators import login_required #JD 05 08
 from .forms import ProfileUpdateForm
+from .models import Follow
+import random
 
 
 def index(request):
@@ -91,3 +94,23 @@ def posts_view(request):
     return render(request, 'posts.html', {'posts': posts})  
 
 #--------------------------------------------
+@login_required
+def home(request):
+    current_user = request.user
+
+    # Usuarios que el actual ya sigue
+    followed_users = Follow.objects.filter(follower=current_user).values_list('followed', flat=True)
+
+    # Excluir al usuario actual y a los que ya sigue
+    suggestions = User.objects.exclude(id__in=followed_users).exclude(id=current_user.id)
+
+    # Convertir a lista y mezclar aleatoriamente
+    suggestions_list = list(suggestions)
+    random.shuffle(suggestions_list)
+
+    return render(request, 'home.html', {'suggestions': suggestions_list})
+
+def follow_user(request, user_id):
+    user_to_follow = get_object_or_404(User, id=user_id)
+    Follow.objects.get_or_create(follower=request.user, followed=user_to_follow)
+    return redirect('home')
