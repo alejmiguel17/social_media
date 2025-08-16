@@ -15,7 +15,8 @@
 #--------------------------------------------
 # sistema de publicaciones (post)  #JD 05 08
 from django.urls import path
-from . import views
+from core import views
+from core.views import like_post
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -23,8 +24,6 @@ urlpatterns = [
     path('logout', views.logout_view, name='logout'),
     path('upload-post', views.upload_post, name='upload-post'),
     path('posts', views.posts_view, name='posts'),  # JD 05 08
-    path('account/settings/', views.account_settings, name='account_settings'),
-    path('home', views.home, name='home'),
-    path('follow/<int:user_id>/', views.follow_user, name='follow_user'),
+    path('account/settings/', views.account_settings, name='account_settings')
 ]
-#-------------------------------------------- 
+#--------------------------------------------

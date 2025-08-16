@@ -1,0 +1,85 @@
+/* Encabezado */
+h2 {
+    font-size: 1.8em;
+    margin-bottom: 20px;
+    color: #1877f2;
+    text-align: center;
+}
+
+/* Formulario de publicación */
+form {
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    margin-bottom: 40px;
+}
+
+form label {
+    font-weight: 600;
+    margin-top: 15px;
+    display: block;
+    color: #333;
+}
+
+form textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* Botón personalizado */
+form button {
+    background-color: #00b2ff;
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 6px;
+    font-size: 1em;
+    cursor: pointer;
+    font-weight: 500;
+    margin-top: 10px;
+    transition: background 0.2s ease;
+}
+
+form button:hover {
+    background-color: #007acc;
+}
+
+/* Post individual */
+.post {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    margin-bottom: 30px;
+}
+
+.post img {
+    display: block;
+    margin: 10px 0;
+    border-radius: 6px;
+    max-width: 100%;
+    height: auto;
+}
+
+.post p {
+    margin: 8px 0;
+    line-height: 1.5;
+}
+
+.post strong {
+    color: #1877f2;
+    font-size: 1.1em;
+}
+
+.post small {
+    color: #666;
+    font-size: 0.85em;
+}
+
+/* Separador */
+hr {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 20px 0;
+}
