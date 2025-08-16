@@ -35,6 +35,7 @@ class Follow(models.Model):
 
     def __str__(self):
         return f"{self.follower.username} sigue a {self.followed.username}"
+    
 # sistema de seguimiento
 class FollowersCount(models.Model):
     follower = models.CharField(max_length=100)

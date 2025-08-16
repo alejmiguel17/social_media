@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 from .models import Profile, Post, FollowersCount, LikePost #JD 14 08
 from django.contrib.auth.decorators import login_required #JD 05 08
 from .forms import ProfileUpdateForm
+from .models import Follow
+import random
 
 
 def index(request):
@@ -86,13 +88,16 @@ def posts_view(request):
     feed_empty = not posts.exists()
 
     # Sugerencias: usuarios que no estás siguiendo y que no eres tú
-    all_users = User.objects.exclude(username=user)
-    suggestions = all_users.exclude(username__in=following_list)[:5]  # limitar a 5
+    def follow_user(request, user_id):
+        current_user = request.user
+        target_user = get_object_or_404(User, id=user_id)
 
-    return render(request, 'posts.html', {
-        'posts': posts,
-        'feed_empty': feed_empty,
-        'suggestions': suggestions
-    })
+        # Evitar seguirse a sí mismo o duplicar
+        if current_user != target_user and not Follow.objects.filter(follower=current_user, followed=target_user).exists():
+            Follow.objects.create(follower=current_user, followed=target_user)
+
+        return redirect('home')
+
+
 
 #--------------------------------------------
