@@ -3,51 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}Twita{% endblock %}</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-        }
-
-        nav {
-            background-color: #333;
-            color: white;
-            padding: 15px;
-            text-align: center;
-        }
-
-        nav a {
-            color: white;
-            text-decoration: none;
-            margin: 0 15px;
-            font-weight: bold;
-        }
-
-        nav a:hover {
-            text-decoration: underline;
-        }
-
-        main {
-            padding: 30px;
-            max-width: 800px;
-            margin: auto;
-            background-color: white;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-
-        footer {
-            background-color: #333;
-            color: white;
-            text-align: center;
-            padding: 20px;
-            margin-top: 40px;
-        }
-    </style>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/_style.css' %}">
+    {% block extra_css %}
+    
+    {% endblock %}
 </head>
 <body>
     <!-- Cerrar sesion y Cuenta agregados -->
+    
     <nav style="background-color: #333; color: white; padding: 15px; display: flex; align-items: center; justify-content: space-between;">
+        <div style="width: 120px;"></div> <!-- Espaciador izquierdo -->
+        <div style="flex: 1; text-align: center;">
+            <a href="{% url 'twita_icon' %}" style="color: white; text-decoration: none;">
+                <span style="font-size: 2em; font-weight: bold;">Twita</span>
+            </a>
+        </div>
         <div>
             {% if user.is_authenticated %}
                 <a href="{% url 'account_settings' %}" style="color: white; margin-right: 15px;">
@@ -56,13 +27,24 @@
                 <a href="{% url 'logout' %}" style="color: white; margin-right: 15px;">Cerrar sesión</a>
             {% endif %}
         </div>
-        <div style="flex: 1; text-align: center;">
-            <a href="{% url 'posts' %}" style="color: white; text-decoration: none;">
-                <span style="font-size: 2em; font-weight: bold;">Twita</span>
-            </a>
-        </div>
-        <div style="width: 120px;"></div> <!-- Espaciador derecho -->
     </nav>
+
+    <script>
+    let lastScroll = 0;
+    const nav = document.querySelector('nav');
+        
+    window.addEventListener('scroll', function() {
+        const currentScroll = window.pageYOffset;
+        if (currentScroll > lastScroll && currentScroll > 60) {
+            // Scroll hacia abajo, oculta nav
+            nav.style.top = '-70px';
+        } else {
+            // Scroll hacia arriba, muestra nav
+            nav.style.top = '0';
+        }
+        lastScroll = currentScroll;
+    });
+    </script>
 
     <main>
         {% block content %}
@@ -73,5 +55,9 @@
     <footer>
         &copy; {{ now|date:"Y" }} Twita. Todos los derechos reservados.
     </footer>
+    
+    {% block extra_js %}
+    
+    {% endblock %}
 </body>
 </html>
