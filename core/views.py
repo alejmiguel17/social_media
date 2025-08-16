@@ -1,11 +1,11 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from .models import Profile, Post, FollowersCount, LikePost #JD 14 08
 from django.contrib.auth.decorators import login_required #JD 05 08
 from .forms import ProfileUpdateForm
-from django.http import JsonResponse
-
+from .models import Follow
+import random
 
 
 def index(request):
@@ -88,103 +88,16 @@ def posts_view(request):
     feed_empty = not posts.exists()
 
     # Sugerencias: usuarios que no estás siguiendo y que no eres tú
-    all_users = User.objects.exclude(username=user)
-    suggestions = all_users.exclude(username__in=following_list)[:5]  # limitar a 5
+    def follow_user(request, user_id):
+        current_user = request.user
+        target_user = get_object_or_404(User, id=user_id)
 
-    return render(request, 'posts.html', {
-        'posts': posts,
-        'feed_empty': feed_empty,
-        'suggestions': suggestions
-    })
+        # Evitar seguirse a sí mismo o duplicar
+        if current_user != target_user and not Follow.objects.filter(follower=current_user, followed=target_user).exists():
+            Follow.objects.create(follower=current_user, followed=target_user)
 
-#--------------------------------------------
-def twita_icon(request):
-    if request.user.is_authenticated:
-        return redirect('posts')
-    else:
-        return redirect('index')
-    
-# 
-def profile_view(request, username):
-    profile_user = get_object_or_404(User, username=username)
+        return redirect('home')
 
-    # Intenta obtener el perfil, y si no existe, créalo
-    profile, created = Profile.objects.get_or_create(user=profile_user)
-
-    is_following = FollowersCount.objects.filter(
-        follower=request.user.username,
-        following=username
-    ).exists()
-
-    user_posts = Post.objects.filter(user=username).order_by('-created_at')
-
-    followers = FollowersCount.objects.filter(following=username).count()
-    following = FollowersCount.objects.filter(follower=username).count()
-
-    return render(request, 'profile.html', {
-        'profile_user': profile_user,
-        'profile': profile,
-        'is_following': is_following,
-        'user_posts': user_posts,
-        'followers': followers,
-        'following': following
-    })
-
-
-# sistema de seguimiento
-@login_required(login_url='login')
-def follow(request):
-    if request.method == 'POST':
-        follower = request.user
-        following_username = request.POST.get('following')
-        following = get_object_or_404(User, username=following_username)
-
-        relation = FollowersCount.objects.filter(follower=follower, following=following)
-
-        if relation.exists():
-            relation.delete()
-            is_following = False
-        else:
-            FollowersCount.objects.create(follower=follower, following=following)
-            is_following = True
-
-        # Nuevo: contar seguidores actualizados
-        followers_count = FollowersCount.objects.filter(following=following).count()
-
-        return JsonResponse({
-            'is_following': is_following,
-            'followers_count': followers_count
-        })
-
-    return JsonResponse({'error': 'Método no permitido'}, status=400)
 
 
 #--------------------------------------------
-# sistema de likes  #JD 14 08
-@login_required(login_url='signin')
-def like_post(request):
-    if request.method == 'POST':
-        post_id = request.POST.get('post_id')
-        user = request.user
-
-        post = get_object_or_404(Post, id=post_id)
-
-        like = LikePost.objects.filter(post=post, user=user).first()
-
-        if like:
-            like.delete()
-            post.no_of_likes -= 1
-            is_liked = False
-        else:
-            LikePost.objects.create(post=post, user=user)
-            post.no_of_likes += 1
-            is_liked = True
-
-        post.save()
-
-        return JsonResponse({
-            'is_liked': is_liked,
-            'likes_count': post.no_of_likes
-        })
-
-    return JsonResponse({'error': 'Método no permitido'}, status=400)

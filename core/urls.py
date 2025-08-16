@@ -23,15 +23,10 @@ urlpatterns = [
     path('signup', views.signup_view, name='signup'),
     path('logout', views.logout_view, name='logout'),
     path('upload-post', views.upload_post, name='upload-post'),
-    path('posts', views.posts_view, name='posts'),  
-    path('profile/<str:username>/', views.profile_view, name='profile'),
-    path('follow/', views.follow, name='follow'),
-    path('account/settings/', views.account_settings, name='account_settings'),
-    path('twita_icon/', views.twita_icon, name='twita_icon'),
-    path('like/', views.like_post, name='like_post'),  # JD 14 08  
+    path('posts', views.posts_view, name='posts'),  # JD 05 08
+    path('account/settings/', views.account_settings, name='account_settings')
+    path('home', views.home, name='home'),
+    path('follow/<int:user_id>/', views.follow_user, name='follow_user'),
 
 ]
-
-
-
-
+#--------------------------------------------

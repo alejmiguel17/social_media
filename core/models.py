@@ -27,6 +27,15 @@ class Post(models.Model):
     def __str__(self):
         return self.user
 #--------------------------------------------
+# sugerencias de usuarios
+
+class Follow(models.Model):
+    follower = models.ForeignKey(User, related_name='following', on_delete=models.CASCADE)
+    followed = models.ForeignKey(User, related_name='followers', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.follower.username} sigue a {self.followed.username}"
+    
 # sistema de seguimiento
 class FollowersCount(models.Model):
     follower = models.CharField(max_length=100)

@@ -1,0 +1,23 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% block content %}
+<ul class="suggestions-list">
+    {% for user in suggestions %}
+        <li class="suggestion-card">
+            <div class="avatar-placeholder">👤</div>
+            <div class="user-info">
+                <strong>{{ user.username }}</strong><br>
+                {{ user.first_name }} {{ user.last_name }}
+            </div>
+            <form method="post" action="{% url 'follow_user' user.id %}">
+                {% csrf_token %}
+                <button type="submit" class="follow-btn">Seguir</button>
+            </form>
+        </li>
+    {% empty %}
+        <li>No hay sugerencias por ahora.</li>
+    {% endfor %}
+</ul>
+{% endblock %}
+
