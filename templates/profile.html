@@ -16,18 +16,20 @@
     {% endif %}
     <p><strong>Bio:</strong> {{ profile.bio|default:"Sin biografía" }}</p>
     <p><strong>Ubicación:</strong> {{ profile.location|default:"No especificada" }}</p>
-    <p><strong>Seguidores:</strong> {{ followers }}</p>
+    <p><strong>Seguidores:</strong> <span id="followers-count">{{ followers }}</span></p>
     <p><strong>Seguidos:</strong> {{ following }}</p>
 
     {% if request.user.username != profile_user.username %}
-        <form method="POST" action="{% url 'follow' %}">
+        <form id="follow-form" method="POST" action="{% url 'follow' %}">
             {% csrf_token %}
             <input type="hidden" name="following" value="{{ profile_user.username }}">
-            {% if is_following %}
-                <button type="submit">Dejar de seguir</button>
-            {% else %}
-                <button type="submit">Seguir</button>
-            {% endif %}
+            <button type="submit" id="follow-btn">
+                {% if is_following %}
+                    Dejar de seguir
+                {% else %}
+                    Seguir
+                {% endif %}
+            </button>
         </form>
     {% endif %}
 </div>
@@ -45,4 +47,43 @@
 {% empty %}
     <p>Este usuario no ha publicado nada aún.</p>
 {% endfor %}
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('follow-form');
+    const button = document.getElementById('follow-btn');
+    const followersCount = document.getElementById('followers-count');
+
+    if (form && button) {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value,
+                    'Accept': 'application/json',
+                },
+                body: new FormData(form)
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Error en la petición');
+                return response.json();
+            })
+            .then(data => {
+                button.textContent = data.is_following ? 'Dejar de seguir' : 'Seguir';
+                if (followersCount) {
+                    followersCount.textContent = data.followers_count;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    }
+});
+</script>
 {% endblock %}

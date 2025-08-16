@@ -15,7 +15,8 @@
 #--------------------------------------------
 # sistema de publicaciones (post)  #JD 05 08
 from django.urls import path
-from . import views
+from core import views
+from core.views import like_post
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -27,7 +28,7 @@ urlpatterns = [
     path('follow/', views.follow, name='follow'),
     path('account/settings/', views.account_settings, name='account_settings'),
     path('twita_icon/', views.twita_icon, name='twita_icon'),
-    path('like-post', views.like_post, name='like-post'),  # JD 14 08  
+    path('like/', views.like_post, name='like_post'),  # JD 14 08  
 
 ]
 

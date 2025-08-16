@@ -31,10 +31,13 @@
 <!-- ---------------------------------------------- -->
 <!-- Sistema de likes #JD 14 08                    -->
         <div>
-            <a href="{% url 'like-post' %}?post_id={{ post.id }}">
-                <button>Me Gusta</button>
-            </a>
-            <p>{{ post.no_of_likes }} Me Gusta</p>
+            <form class="like-form" method="POST" data-post-id="{{ post.id }}">
+                {% csrf_token %}
+                <button type="submit" class="like-btn" id="like-btn-{{ post.id }}">
+                    ❤️ Me gusta
+                </button>
+                <span id="likes-count-{{ post.id }}">{{ post.no_of_likes }}</span>
+            </form>
         </div>
 <!-- ---------------------------------------------- -->
 
@@ -55,4 +58,38 @@
         {% endfor %}
     </ul>
 {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.like-form').forEach(form => {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const postId = form.dataset.postId;
+            const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]').value;
+            const button = document.getElementById(`like-btn-${postId}`);
+            const countSpan = document.getElementById(`likes-count-${postId}`);
+
+            fetch("{% url 'like_post' %}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                    'Accept': 'application/json',
+                },
+                body: new URLSearchParams({ post_id: postId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                button.textContent = data.is_liked ? '💔 Quitar Me gusta' : '❤️ Me gusta';
+                countSpan.textContent = data.likes_count;
+            })
+            .catch(error => {
+                console.error('Error al dar Me gusta:', error);
+            });
+        });
+    });
+});
+</script>
 {% endblock %}

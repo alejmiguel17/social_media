@@ -38,8 +38,9 @@ class FollowersCount(models.Model):
 #--------------------------------------------
 # sistema de likes #JD 14 08
 class LikePost(models.Model):
-    post_id = models.CharField(max_length=500)
-    username = models.CharField(max_length=100)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.username
+        return f"{self.user.username} dio like a {self.post.id}"
+

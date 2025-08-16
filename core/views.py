@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from .models import Profile, Post, FollowersCount, LikePost #JD 14 08
 from django.contrib.auth.decorators import login_required #JD 05 08
 from .forms import ProfileUpdateForm
+from django.http import JsonResponse
 
 
 
@@ -131,45 +132,59 @@ def profile_view(request, username):
 
 
 # sistema de seguimiento
+@login_required(login_url='login')
 def follow(request):
     if request.method == 'POST':
         follower = request.user
         following_username = request.POST.get('following')
-        following = User.objects.get(username=following_username)
+        following = get_object_or_404(User, username=following_username)
 
         relation = FollowersCount.objects.filter(follower=follower, following=following)
 
         if relation.exists():
             relation.delete()
+            is_following = False
         else:
             FollowersCount.objects.create(follower=follower, following=following)
+            is_following = True
 
-        return redirect('profile', username=following_username)
+        # Nuevo: contar seguidores actualizados
+        followers_count = FollowersCount.objects.filter(following=following).count()
+
+        return JsonResponse({
+            'is_following': is_following,
+            'followers_count': followers_count
+        })
+
+    return JsonResponse({'error': 'Método no permitido'}, status=400)
+
 
 #--------------------------------------------
 # sistema de likes  #JD 14 08
 @login_required(login_url='signin')
 def like_post(request):
-    # datos del usuario y post
-    username = request.user.username
-    post_id = request.GET.get('post_id')
+    if request.method == 'POST':
+        post_id = request.POST.get('post_id')
+        user = request.user
 
-    # Busqueda de post en base de datos
-    post = Post.objects.get(id=post_id)
+        post = get_object_or_404(Post, id=post_id)
 
-    # Existe me gusta?
-    like_filter = LikePost.objects.filter(post_id=post_id, username=username).first()
+        like = LikePost.objects.filter(post=post, user=user).first()
 
-    if like_filter is None:
-        # No, se crea un nuevo Me Gusta
-        new_like = LikePost.objects.create(post_id=post_id, username=username)
-        new_like.save()
-        post.no_of_likes = post.no_of_likes + 1
-        post.save()
-    else:
-        # Si, se elimina el Me Gusta
-        like_filter.delete()
-        post.no_of_likes = post.no_of_likes - 1
+        if like:
+            like.delete()
+            post.no_of_likes -= 1
+            is_liked = False
+        else:
+            LikePost.objects.create(post=post, user=user)
+            post.no_of_likes += 1
+            is_liked = True
+
         post.save()
 
-    return redirect('/')
+        return JsonResponse({
+            'is_liked': is_liked,
+            'likes_count': post.no_of_likes
+        })
+
+    return JsonResponse({'error': 'Método no permitido'}, status=400)
