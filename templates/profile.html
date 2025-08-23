@@ -20,7 +20,7 @@
     <p><strong>Seguidos:</strong> {{ following }}</p>
 
     {% if request.user.username != profile_user.username %}
-        <form id="follow-form" method="POST" action="{% url 'follow' %}">
+        <form id="follow-form" method="POST" action="{% url 'follow_user' profile_user.id %}">
             {% csrf_token %}
             <input type="hidden" name="following" value="{{ profile_user.username }}">
             <button type="submit" id="follow-btn">
@@ -37,11 +37,19 @@
 <hr>
 
 <h3>Publicaciones de {{ profile_user.username }}</h3>
-{% for post in user_posts %}
+{% for post in posts %}
     <div class="post">
         <img src="{{ post.image.url }}" alt="Imagen del post" style="max-width:300px;">
         <p>{{ post.caption }}</p>
         <p><small>{{ post.created_at }}</small></p>
+
+        {% if post.user == request.user or request.user.is_superuser %}
+            <form method="POST" action="{% url 'delete_post' post.id %}">
+                {% csrf_token %}
+                <button type="submit" onclick="return confirm('¿Eliminar este post?')">🗑️ Eliminar</button>
+            </form>
+        {% endif %}
+
         <hr>
     </div>
 {% empty %}

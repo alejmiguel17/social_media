@@ -36,7 +36,7 @@
                 <button type="submit" class="like-btn" id="like-btn-{{ post.id }}">
                     ❤️ Me gusta
                 </button>
-                <span id="likes-count-{{ post.id }}">{{ post.no_of_likes }}</span>
+                <span id="likes-count-{{ post.id }}">{{ post.likes_count }}</span>
             </form>
         </div>
 <!-- ---------------------------------------------- -->
@@ -72,17 +72,16 @@ document.addEventListener('DOMContentLoaded', function () {
             const button = document.getElementById(`like-btn-${postId}`);
             const countSpan = document.getElementById(`likes-count-${postId}`);
 
-            fetch("{% url 'like_post' %}", {
+            fetch(`/like/${postId}/`, {
                 method: 'POST',
                 headers: {
                     'X-CSRFToken': csrfToken,
                     'Accept': 'application/json',
-                },
-                body: new URLSearchParams({ post_id: postId })
+                }
             })
             .then(response => response.json())
             .then(data => {
-                button.textContent = data.is_liked ? '💔 Quitar Me gusta' : '❤️ Me gusta';
+                button.textContent = data.liked ? '💔 Quitar Me gusta' : '❤️ Me gusta';
                 countSpan.textContent = data.likes_count;
             })
             .catch(error => {

@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from .models import Profile, Post, FollowersCount, LikePost #JD 14 08
@@ -6,6 +6,10 @@ from django.contrib.auth.decorators import login_required #JD 05 08
 from .forms import ProfileUpdateForm
 from .models import Follow
 import random
+from django.http import JsonResponse
+from django.core.exceptions import ObjectDoesNotExist
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 
 
 def index(request):
@@ -41,25 +45,38 @@ def signup_view(request):
     return render(request, 'signup.html')  
 
 
+
+def profile_view(request, username):
+    user = get_object_or_404(User, username=username)
+    try:
+        profile = user.profile
+    except ObjectDoesNotExist:
+        # Puedes redirigir, mostrar un mensaje, o crear el perfil automáticamente
+        return redirect('home')  # o mostrar una página de error personalizada
+
+    posts = Post.objects.filter(user=user).order_by('-created_at')
+    return render(request, 'profile.html', {
+        'profile_user': user,
+        'profile': profile,
+        'posts': posts
+    })
+
 def logout_view(request):
     logout(request)
     return redirect('index')
 
 #--------------------------------------------
 # sistema de publicaciones (post)  #JD 05 08
-@login_required(login_url='login') 
+@login_required(login_url='login')
 def upload_post(request):
     if request.method == 'POST':
-        user = request.user.username
+        user = request.user  # 👈 Esto es el objeto User
         image = request.FILES.get('image_upload')
         caption = request.POST.get('caption')
 
         new_post = Post.objects.create(user=user, image=image, caption=caption)
-        new_post.save()
-
         return redirect('posts')
-    # else:
-    #     return redirect('index')
+
 #--------------------------------------------
 # Perfil de usuario y configuración de cuenta
 @login_required
@@ -76,28 +93,103 @@ def account_settings(request):
 
     return render(request, 'account_settings.html', {'form': form})
 
-# vista de publicaciones en una plantilla posts
-from django.contrib.auth.models import User
 
 @login_required(login_url='login')
 def posts_view(request):
-    user = request.user.username
-    following_list = FollowersCount.objects.filter(follower=user).values_list('following', flat=True)
-    posts = Post.objects.filter(user__in=following_list).order_by('-created_at')
+    # Usuarios que el usuario actual sigue
+    followed_users = User.objects.filter(profile__followers=request.user)
+    followed_users = list(followed_users)
+    followed_users.append(request.user)
 
+    posts = Post.objects.filter(user__in=followed_users).order_by('-created_at')
     feed_empty = not posts.exists()
 
-    # Sugerencias: usuarios que no estás siguiendo y que no eres tú
-    def follow_user(request, user_id):
-        current_user = request.user
-        target_user = get_object_or_404(User, id=user_id)
+    suggestions = User.objects.exclude(id__in=[u.id for u in followed_users])
 
-        # Evitar seguirse a sí mismo o duplicar
-        if current_user != target_user and not Follow.objects.filter(follower=current_user, followed=target_user).exists():
-            Follow.objects.create(follower=current_user, followed=target_user)
+    context = {
+        'posts': posts,
+        'feed_empty': feed_empty,
+        'suggestions': suggestions,
+    }
 
-        return redirect('home')
+    return render(request, 'posts.html', context)
 
+
+
+
+
+@login_required
+def delete_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+
+    # Comparación directa entre objetos User
+    if post.user == request.user or request.user.is_superuser:
+        post.delete()
+
+    return redirect('posts')
 
 
 #--------------------------------------------
+@require_POST
+@login_required
+def like_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    user = request.user
+
+    like_obj, created = LikePost.objects.get_or_create(post=post, user=user)
+
+    if not created:
+        like_obj.delete()
+        liked = False
+    else:
+        liked = True
+
+    return JsonResponse({
+        'status': 'success',
+        'liked': liked,
+        'likes_count': LikePost.objects.filter(post=post).count()
+    })
+
+def home(request):
+    return render(request, 'home.html') 
+
+
+
+@login_required
+def follow_user(request, user_id):
+    if request.method == 'POST':
+        try:
+            target_user = User.objects.get(id=user_id)
+            current_user = request.user
+
+            if current_user == target_user:
+                return JsonResponse({'status': 'error', 'message': 'No puedes seguirte a ti mismo'}, status=400)
+
+            # Asumiendo que tienes un modelo Profile con un campo ManyToMany llamado followers
+            profile = target_user.profile
+
+            if current_user in profile.followers.all():
+                profile.followers.remove(current_user)
+                is_following = False
+            else:
+                profile.followers.add(current_user)
+                is_following = True
+
+            followers_count = profile.followers.count()
+
+            return JsonResponse({
+                'status': 'success',
+                'is_following': is_following,
+                'followers_count': followers_count
+            })
+
+        except User.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Usuario no encontrado'}, status=404)
+
+    return JsonResponse({'status': 'error', 'message': 'Método no permitido'}, status=405)
+
+def twita_icon(request):
+    if request.method == 'POST':
+        # Aquí iría tu lógica para manejar el "twit"
+        return JsonResponse({'status': 'success', 'message': 'Twit realizado con éxito'})
+    return JsonResponse({'status': 'error', 'message': 'Método no permitido'}, status=405)
