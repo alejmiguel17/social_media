@@ -12,14 +12,14 @@
 <body>
     <!-- Cerrar sesion y Cuenta agregados -->
     
-    <nav style="background-color: #333; color: white; padding: 15px; display: flex; align-items: center; justify-content: space-between;">
+    <nav style="background-color: #333; color: white; padding: 15px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;">
         <div style="width: 120px;"></div> <!-- Espaciador izquierdo -->
         <div style="flex: 1; text-align: center;">
             <a href="{% url 'posts' %}" style="color: white; text-decoration: none;">
                 <span style="font-size: 2em; font-weight: bold;">Twita</span>
             </a>
         </div>
-        <div>
+        <div style="text-align: right; padding-right: 20px;">
             {% if user.is_authenticated %}
                 <a href="{% url 'profile' user.username %}" style="color: white; margin-right: 15px;">Mi perfil</a>
                 <a href="{% url 'account_settings' %}" style="color: white; margin-right: 15px;">Configuración</a>

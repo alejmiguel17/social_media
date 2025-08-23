@@ -114,3 +114,18 @@ footer {
     font-size: 0.95em;
     letter-spacing: 1px;
 }
+
+/* sugerencia */
+.post {
+    animation: fadeIn 0.4s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.post img:hover {
+    transform: scale(1.02);
+    transition: transform 0.2s ease;
+}

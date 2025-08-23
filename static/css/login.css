@@ -77,3 +77,30 @@ body {
 .extra-links a:hover {
     text-decoration: underline;
 }
+
+
+.login-container {
+    animation: fadeInUp 0.4s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+.login-container input:focus {
+    border-color: #1877f2;
+    box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.2);
+    outline: none;
+}
+
+.login-container {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}

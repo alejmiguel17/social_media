@@ -33,7 +33,8 @@ urlpatterns = [
     path('profile/<str:username>/', views.profile_view, name='profile'),
     path('delete_post/<uuid:post_id>/', views.delete_post, name='delete_post'),
     path('mi-perfil/', views.my_profile, name='my_profile'),
-
+    path('follow-toggle/', views.follow_toggle, name='follow-toggle'),
+    
 
 ]
 #--------------------------------------------

@@ -20,17 +20,15 @@
     <p><strong>Seguidos:</strong> {{ following }}</p>
 
     {% if request.user.username != profile_user.username %}
-        <form id="follow-form" method="POST" action="{% url 'follow_user' profile_user.id %}">
-            {% csrf_token %}
-            <input type="hidden" name="following" value="{{ profile_user.username }}">
-            <button type="submit" id="follow-btn">
-                {% if is_following %}
-                    Dejar de seguir
-                {% else %}
-                    Seguir
-                {% endif %}
-            </button>
-        </form>
+        <button type="button"
+                id="follow-btn"
+                data-user-id="{{ profile_user.id }}">
+            {% if is_following %}
+                Dejar de seguir
+            {% else %}
+                Seguir
+            {% endif %}
+        </button>
     {% endif %}
 </div>
 
@@ -59,34 +57,39 @@
 
 {% block extra_js %}
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('.delete-btn').forEach(button => {
-        button.addEventListener('click', function () {
-            const postId = this.dataset.postId;
-            const csrfToken = document.getElementById('csrf-token').value;
+	document.addEventListener('DOMContentLoaded', () => {
+		const followBtn = document.getElementById('follow-btn');
+		const followersCount = document.getElementById('followers-count');
+		const csrfToken = document.getElementById('csrf-token')?.value;
 
-            fetch(`/delete_post/${postId}/`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': csrfToken,
-                    'Accept': 'application/json'
-                }
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Error al eliminar');
-                return response.json();
-            })
-            .then(data => {
-                if (data.status === 'success') {
-                    const postElement = document.getElementById(`post-${postId}`);
-                    if (postElement) postElement.remove();
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-        });
-    });
-});
+		if (!followBtn || !csrfToken) return;
+
+		followBtn.addEventListener('click', () => {
+			const userId = followBtn.dataset.userId;
+
+			fetch('/follow-toggle/', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-CSRFToken': csrfToken,
+					'Accept': 'application/json'
+				},
+				body: JSON.stringify({ user_id: userId })
+			})
+				.then(response => {
+					if (!response.ok) throw new Error('Error al seguir');
+					return response.json();
+				})
+				.then(data => {
+					if (data.status === 'success') {
+						followBtn.textContent = data.is_following ? 'Dejar de seguir' : 'Seguir';
+						followersCount.textContent = data.followers_count;
+					}
+				})
+				.catch(error => {
+					console.error('Error:', error);
+				});
+		});
+	});
 </script>
 {% endblock %}

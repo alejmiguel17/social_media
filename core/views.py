@@ -10,6 +10,7 @@ from django.http import JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+import json
 
 
 def index(request):
@@ -213,3 +214,30 @@ def twita_icon(request):
         # Aquí iría tu lógica para manejar el "twit"
         return JsonResponse({'status': 'success', 'message': 'Twit realizado con éxito'})
     return JsonResponse({'status': 'error', 'message': 'Método no permitido'}, status=405)
+
+
+@require_POST
+@login_required
+def follow_toggle(request):
+    data = json.loads(request.body)
+    user_id = data.get('user_id')
+    target_user = get_object_or_404(User, id=user_id)
+
+    if request.user == target_user:
+        return JsonResponse({'status': 'error', 'message': 'No puedes seguirte a ti mismo'}, status=400)
+
+    profile = target_user.profile  # 👈 accede al perfil
+
+    # Toggle follow
+    if request.user in profile.followers.all():
+        profile.followers.remove(request.user)
+        is_following = False
+    else:
+        profile.followers.add(request.user)
+        is_following = True
+
+    return JsonResponse({
+        'status': 'success',
+        'is_following': is_following,
+        'followers_count': profile.followers.count()
+    })

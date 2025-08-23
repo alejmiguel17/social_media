@@ -83,3 +83,27 @@ hr {
     border-top: 1px solid #ddd;
     margin: 20px 0;
 }
+
+
+
+.post {
+    animation: fadeInPost 0.4s ease;
+}
+
+@keyframes fadeInPost {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.post:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transform: scale(1.01);
+    transition: all 0.2s ease;
+}
+
