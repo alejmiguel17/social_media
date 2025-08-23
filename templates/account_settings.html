@@ -1,21 +1,61 @@
 {% extends '_base.html' %}
 {% load static %}
 
-
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/account.css' %}">
+	<link rel="stylesheet" href="{% static 'css/account.css' %}">
 {% endblock %}
 
 {% block content %}
-<div class="account-settings-container">
-    <h2>Configuración de la cuenta</h2>
-    {% if user.profile.profile_picture %}
-        <img src="{{ user.profile.profile_picture.url }}" alt="Foto de perfil">
-    {% endif %}
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Guardar cambios</button>
-    </form>
-</div>
+	<div class="account-settings-container">
+		<h2>Configuración de la cuenta</h2>
+
+		{% if user.profile.profile_picture %}
+			<img src="{{ user.profile.profile_picture.url }}" alt="Foto de perfil">
+		{% endif %}
+
+		<form method="post" enctype="multipart/form-data">
+			{% csrf_token %}
+			{{ form.as_p }}
+			<button type="submit">Guardar cambios</button>
+		</form>
+
+		<hr>
+
+		<div class="delete-account-section">
+			<h3>Eliminar cuenta</h3>
+			<p>Esta acción es permanente y no se puede deshacer.</p>
+			<button id="delete-account-btn" class="btn btn-danger">Eliminar mi cuenta</button>
+		</div>
+	</div>
+{% endblock %}
+
+{% block extra_js %}
+	<script>
+		document.addEventListener('DOMContentLoaded', () => {
+			const deleteBtn = document.getElementById('delete-account-btn');
+
+			if (deleteBtn) {
+				deleteBtn.addEventListener('click', () => {
+					if (confirm('¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer.')) {
+						fetch("{% url 'delete_account' %}", {
+							method: 'POST',
+							headers: {
+								'X-CSRFToken': '{{ csrf_token }}',
+								'Content-Type': 'application/json'
+							}
+						})
+						.then(res => res.json())
+						.then(data => {
+							if (data.status === 'success') {
+								alert('Tu cuenta ha sido eliminada correctamente.');
+								window.location.href = '/';
+							} else {
+								alert('Hubo un error al eliminar la cuenta.');
+							}
+						});
+					}
+				});
+			}
+		});
+	</script>
 {% endblock %}

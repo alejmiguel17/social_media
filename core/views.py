@@ -11,6 +11,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 import json
+from django.contrib.auth import get_user_model
+
 
 
 def index(request):
@@ -241,3 +243,13 @@ def follow_toggle(request):
         'is_following': is_following,
         'followers_count': profile.followers.count()
     })
+
+
+
+@login_required
+def delete_account(request):
+	if request.method == 'POST':
+		user = request.user
+		user.delete()
+		return JsonResponse({'status': 'success'})
+	return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
