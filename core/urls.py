@@ -16,7 +16,7 @@
 # sistema de publicaciones (post)  #JD 05 08
 from django.urls import path
 from core import views
-from core.views import like_post
+from core.views import like_post, PostDeleteView
 from uuid import UUID
 from django.conf import settings
 from django.conf.urls.static import static
@@ -35,7 +35,7 @@ urlpatterns = [
     path('twita/', views.twita_icon, name='twita_icon'),
     path('like/<uuid:post_id>/', views.like_post, name='like_post'),
     path('profile/<str:username>/', views.profile_view, name='profile'),
-    path('delete_post/<uuid:post_id>/', views.delete_post, name='delete_post'),
+    path('delete_post/<uuid:pk>/', PostDeleteView.as_view(), name='delete_post'),
     path('mi-perfil/', views.my_profile, name='my_profile'),
     path('follow-toggle/', views.follow_toggle, name='follow-toggle'),
     path('delete-account/', views.delete_account, name='delete_account'),

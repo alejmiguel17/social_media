@@ -42,8 +42,9 @@
         <p><small>{{ post.created_at }}</small></p>
 
         {% if post.user == request.user or request.user.is_superuser %}
-            <button class="delete-btn" data-post-id="{{ post.id }}">Eliminar</button>
-        {% endif %}
+            <!-- <button class="delete-btn" data-post-id="{{ post.id }}">Eliminar</button> -->
+            <a href="{% url 'delete_post' post.id %}" class="delete-btn">Eliminar</a>
+            {% endif %}
 
         <hr>
     </div>

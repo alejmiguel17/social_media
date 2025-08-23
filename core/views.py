@@ -141,15 +141,30 @@ def posts_view(request):
 
 
 
-@login_required
-def delete_post(request, post_id):
-    post = get_object_or_404(Post, id=post_id)
-    if post.user == request.user or request.user.is_superuser:
-        post.delete()
-        return JsonResponse({'status': 'success'})
-    return JsonResponse({'status': 'error'}, status=403)
+# @login_required
+# def delete_post(request, post_id):
+#     try:
+#         post = Post.objects.get(id=post_id)
+#         if post.user == request.user or request.user.is_superuser:
+#             post.delete()
+#             return JsonResponse({'status': 'success'})
+#         else:
+#             return JsonResponse({'status': 'error', 'message': 'No tienes permiso'})
+#     except Post.DoesNotExist:
+#         return JsonResponse({'status': 'error', 'message': 'Post no encontrado'})
 
+from django.views.generic import DeleteView
+from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
+class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+	model = Post
+	template_name = 'post_confirm_delete.html'
+	success_url = reverse_lazy('my_profile')  # o donde quieras redirigir
+
+	def test_func(self):
+		post = self.get_object()
+		return self.request.user == post.user or self.request.user.is_superuser
 
 
 #--------------------------------------------
