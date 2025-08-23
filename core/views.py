@@ -45,21 +45,42 @@ def signup_view(request):
     return render(request, 'signup.html')  
 
 
+@login_required
+def my_profile(request):
+    return redirect('profile', username=request.user.username)
+
 
 def profile_view(request, username):
     user = get_object_or_404(User, username=username)
+
     try:
         profile = user.profile
-    except ObjectDoesNotExist:
-        # Puedes redirigir, mostrar un mensaje, o crear el perfil automáticamente
-        return redirect('home')  # o mostrar una página de error personalizada
+    except Profile.DoesNotExist:
+        return redirect('home')  # o crea el perfil automáticamente
 
     posts = Post.objects.filter(user=user).order_by('-created_at')
-    return render(request, 'profile.html', {
+
+    # 👇 Seguidores y seguidos usando el modelo Profile y Follow
+    followers = profile.followers.count()
+    following = Follow.objects.filter(follower=user).count()
+
+    # 👇 Verifica si el usuario actual ya sigue al perfil
+    is_following = False
+    if request.user.is_authenticated and request.user != user:
+        is_following = profile.followers.filter(id=request.user.id).exists()
+
+    context = {
         'profile_user': user,
         'profile': profile,
-        'posts': posts
-    })
+        'posts': posts,
+        'followers': followers,
+        'following': following,
+        'is_following': is_following,
+    }
+
+    return render(request, 'profile.html', context)
+
+
 
 def logout_view(request):
     logout(request)
@@ -117,16 +138,15 @@ def posts_view(request):
 
 
 
-
 @login_required
 def delete_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
-
-    # Comparación directa entre objetos User
     if post.user == request.user or request.user.is_superuser:
         post.delete()
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'error'}, status=403)
 
-    return redirect('posts')
+
 
 
 #--------------------------------------------

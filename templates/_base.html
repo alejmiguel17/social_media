@@ -21,12 +21,12 @@
         </div>
         <div>
             {% if user.is_authenticated %}
-                <a href="{% url 'account_settings' %}" style="color: white; margin-right: 15px;">
-                    {{ user.username }}
-                </a>
+                <a href="{% url 'profile' user.username %}" style="color: white; margin-right: 15px;">Mi perfil</a>
+                <a href="{% url 'account_settings' %}" style="color: white; margin-right: 15px;">Configuración</a>
                 <a href="{% url 'logout' %}" style="color: white; margin-right: 15px;">Cerrar sesión</a>
             {% endif %}
         </div>
+
     </nav>
 
     <script>

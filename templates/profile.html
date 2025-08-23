@@ -38,16 +38,13 @@
 
 <h3>Publicaciones de {{ profile_user.username }}</h3>
 {% for post in posts %}
-    <div class="post">
+    <div class="post" id="post-{{ post.id }}">
         <img src="{{ post.image.url }}" alt="Imagen del post" style="max-width:300px;">
         <p>{{ post.caption }}</p>
         <p><small>{{ post.created_at }}</small></p>
 
         {% if post.user == request.user or request.user.is_superuser %}
-            <form method="POST" action="{% url 'delete_post' post.id %}">
-                {% csrf_token %}
-                <button type="submit" onclick="return confirm('¿Eliminar este post?')">🗑️ Eliminar</button>
-            </form>
+            <button class="delete-btn" data-post-id="{{ post.id }}">Eliminar</button>
         {% endif %}
 
         <hr>
@@ -55,43 +52,41 @@
 {% empty %}
     <p>Este usuario no ha publicado nada aún.</p>
 {% endfor %}
+    <input type="hidden" id="csrf-token" value="{{ csrf_token }}">
 {% endblock %}
+
 
 
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const form = document.getElementById('follow-form');
-    const button = document.getElementById('follow-btn');
-    const followersCount = document.getElementById('followers-count');
+    document.querySelectorAll('.delete-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const postId = this.dataset.postId;
+            const csrfToken = document.getElementById('csrf-token').value;
 
-    if (form && button) {
-        form.addEventListener('submit', function (e) {
-            e.preventDefault();
-
-            fetch(form.action, {
+            fetch(`/delete_post/${postId}/`, {
                 method: 'POST',
                 headers: {
-                    'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value,
-                    'Accept': 'application/json',
-                },
-                body: new FormData(form)
+                    'X-CSRFToken': csrfToken,
+                    'Accept': 'application/json'
+                }
             })
             .then(response => {
-                if (!response.ok) throw new Error('Error en la petición');
+                if (!response.ok) throw new Error('Error al eliminar');
                 return response.json();
             })
             .then(data => {
-                button.textContent = data.is_following ? 'Dejar de seguir' : 'Seguir';
-                if (followersCount) {
-                    followersCount.textContent = data.followers_count;
+                if (data.status === 'success') {
+                    const postElement = document.getElementById(`post-${postId}`);
+                    if (postElement) postElement.remove();
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
             });
         });
-    }
+    });
 });
 </script>
 {% endblock %}
